@@ -257,10 +257,14 @@ else()
   include_directories(third_party/zlib)
   include_directories(${CMAKE_CURRENT_BINARY_DIR}/third_party/zlib)
   add_subdirectory(third_party/zlib)
-  set_property(TARGET example PROPERTY FOLDER "third_party")
-  set_property(TARGET minigzip PROPERTY FOLDER "third_party")
-  set_property(TARGET zlib PROPERTY FOLDER "third_party")
-  set_property(TARGET zlibstatic PROPERTY FOLDER "third_party")
+  # zlib 1.3.x renamed its example targets (e.g. example -> zlib_example), so
+  # only set the folder on targets that actually exist.
+  foreach(zlib_target zlib zlibstatic example minigzip zlib_example
+          zlib_static_example)
+    if(TARGET ${zlib_target})
+      set_property(TARGET ${zlib_target} PROPERTY FOLDER "third_party")
+    endif()
+  endforeach()
 
   init_submodule(third_party/zstd)
   set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "build zstd programs" FORCE)
